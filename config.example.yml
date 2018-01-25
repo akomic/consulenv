@@ -1,0 +1,4 @@
+addr: localhost:8500
+token: mytoken
+auth: user:pass
+ssl: false
