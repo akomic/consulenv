@@ -3,8 +3,6 @@ package commands
 import (
 	"fmt"
 	"os"
-	// "path/filepath"
-	// "strings"
 
 	"consulenv/consul"
 	"github.com/spf13/cobra"
@@ -16,8 +14,8 @@ var (
 	daemon  bool   //
 	version bool   //
 
-	// MyCmd ...
-	MyCmd = &cobra.Command{
+	// Cmd ...
+	Cmd = &cobra.Command{
 		Use:   "",
 		Short: "",
 		Long:  ``,
@@ -32,31 +30,31 @@ var (
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	MyCmd.PersistentFlags().StringP("config", "c", "", "config file")
+	Cmd.PersistentFlags().StringP("config", "c", "", "config file")
 
-	MyCmd.PersistentFlags().StringP("addr", "", "127.0.0.1:8500", "Consul server address")
-	MyCmd.PersistentFlags().StringP("token", "", "", "Consul token")
-	MyCmd.PersistentFlags().StringP("auth", "", "", "Consul server API user:pass")
-	MyCmd.PersistentFlags().StringP("ssl", "", "false", "Consul server HTTPS")
+	Cmd.PersistentFlags().StringP("addr", "", "127.0.0.1:8500", "Consul server address")
+	Cmd.PersistentFlags().StringP("token", "", "", "Consul token")
+	Cmd.PersistentFlags().StringP("auth", "", "", "Consul server API user:pass")
+	Cmd.PersistentFlags().StringP("ssl", "", "false", "Consul server HTTPS")
 
-	MyCmd.PersistentFlags().MarkHidden("addr")
-	MyCmd.PersistentFlags().MarkHidden("token")
-	MyCmd.PersistentFlags().MarkHidden("auth")
-	MyCmd.PersistentFlags().MarkHidden("ssl")
+	Cmd.PersistentFlags().MarkHidden("addr")
+	Cmd.PersistentFlags().MarkHidden("token")
+	Cmd.PersistentFlags().MarkHidden("auth")
+	Cmd.PersistentFlags().MarkHidden("ssl")
 
-	MyCmd.PersistentFlags().StringSliceP("path", "p", nil, "Path")
-	MyCmd.PersistentFlags().BoolP("export", "e", false, "Export bash format")
-	MyCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbosity")
+	Cmd.PersistentFlags().StringSliceP("path", "p", nil, "Path")
+	Cmd.PersistentFlags().BoolP("export", "e", false, "Export bash format")
+	Cmd.PersistentFlags().BoolP("verbose", "v", false, "Verbosity")
 
-	viper.BindPFlag("config", MyCmd.PersistentFlags().Lookup("config"))
-	viper.BindPFlag("addr", MyCmd.PersistentFlags().Lookup("addr"))
-	viper.BindPFlag("token", MyCmd.PersistentFlags().Lookup("token"))
-	viper.BindPFlag("auth", MyCmd.PersistentFlags().Lookup("auth"))
-	viper.BindPFlag("ssl", MyCmd.PersistentFlags().Lookup("ssl"))
+	viper.BindPFlag("config", Cmd.PersistentFlags().Lookup("config"))
+	viper.BindPFlag("addr", Cmd.PersistentFlags().Lookup("addr"))
+	viper.BindPFlag("token", Cmd.PersistentFlags().Lookup("token"))
+	viper.BindPFlag("auth", Cmd.PersistentFlags().Lookup("auth"))
+	viper.BindPFlag("ssl", Cmd.PersistentFlags().Lookup("ssl"))
 
-	viper.BindPFlag("path", MyCmd.PersistentFlags().Lookup("path"))
-	viper.BindPFlag("export", MyCmd.PersistentFlags().Lookup("export"))
-	viper.BindPFlag("verbose", MyCmd.PersistentFlags().Lookup("verbose"))
+	viper.BindPFlag("path", Cmd.PersistentFlags().Lookup("path"))
+	viper.BindPFlag("export", Cmd.PersistentFlags().Lookup("export"))
+	viper.BindPFlag("verbose", Cmd.PersistentFlags().Lookup("verbose"))
 
 	viper.BindEnv("addr", "CONSUL_HTTP_ADDR")
 	viper.BindEnv("token", "CONSUL_HTTP_TOKEN")
