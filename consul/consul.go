@@ -95,8 +95,6 @@ func pathsToQuery(paths []string) []string {
 func processEnv(envMap map[string]map[string]string, paths []string) map[string]string {
 	export := viper.GetBool("export")
 
-	sort.Sort(sort.Reverse(ByLength(paths)))
-
 	env := make(map[string]string)
 
 	for _, path := range paths {

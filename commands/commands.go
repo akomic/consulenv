@@ -7,6 +7,7 @@ import (
 	"consulenv/consul"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"path/filepath"
 )
 
 var (
@@ -64,6 +65,13 @@ func init() {
 
 func initConfig() {
 	cfgFile := viper.GetString("config")
+
+	if cfgFile == "" {
+		abs, err := filepath.Abs(filepath.Join(os.Getenv("HOME"), ".consulenv/config.yml"))
+		if err == nil {
+			cfgFile = abs
+		}
+	}
 
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
