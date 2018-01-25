@@ -109,11 +109,19 @@ func processEnv(envMap map[string]map[string]string, paths []string) map[string]
 			}
 		}
 	}
+	fi, _ := os.Stdout.Stat()
+
 	for k, v := range env {
 		if export {
 			fmt.Printf("export %s='%s'\n", k, v)
+			if (fi.Mode() & os.ModeCharDevice) == 0 {
+				fmt.Fprintf(os.Stderr, "export %s='%s'\n", k, v)
+			}
 		} else {
 			fmt.Printf("%s=%s\n", k, v)
+			if (fi.Mode() & os.ModeCharDevice) == 0 {
+				fmt.Fprintf(os.Stderr, "%s=%s\n", k, v)
+			}
 		}
 	}
 	return env
