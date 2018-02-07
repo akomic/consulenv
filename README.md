@@ -12,13 +12,13 @@ go build
 
 use config.example.yml or env variables.
 
-- CONSUL_HTTP_ADDR
+- CONSUL_HTTP_ADDR (localhost:1234)
 - CONSUL_HTTP_TOKEN
-- CONSUL_HTTP_AUTH
-- CONSUL_HTTP_SSL
+- CONSUL_HTTP_AUTH (user:pass)
+- CONSUL_HTTP_SSL (true|false)
 
 ## Running
 
 ```
-eval $(./consulenv -p staging/env/MyApp/ -p -p environment/env/MyApp/staging1)
+eval $(./consulenv -p staging/env/MyApp/ -p environment/env/MyApp/staging1)
 ```

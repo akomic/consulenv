@@ -68,6 +68,16 @@ func getConsul() *consulapi.Client {
 	return consul
 }
 
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+// Check if path is unique and is not contained by another path
 func pathIsUnique(s []string, path string) bool {
 	for _, p := range s {
 		if p != path && strings.HasPrefix(path, p) {
@@ -84,7 +94,7 @@ func pathsToQuery(paths []string) []string {
 
 	for _, path := range paths {
 		path = strings.Trim(path, "/")
-		if pathIsUnique(paths, path) {
+		if pathIsUnique(paths, path) && !contains(uniquePaths, path) {
 			uniquePaths = append(uniquePaths, path)
 		}
 	}
@@ -92,7 +102,7 @@ func pathsToQuery(paths []string) []string {
 	return uniquePaths
 }
 
-func processEnv(envMap map[string]map[string]string, paths []string) map[string]string {
+func processEnv(envMap map[string]map[string]string, envKeys []string, paths []string) {
 	export := viper.GetBool("export")
 
 	env := make(map[string]string)
@@ -109,20 +119,19 @@ func processEnv(envMap map[string]map[string]string, paths []string) map[string]
 	}
 	fi, _ := os.Stdout.Stat()
 
-	for k, v := range env {
+	for _, k := range envKeys {
 		if export {
-			fmt.Printf("export %s='%s'\n", k, v)
+			fmt.Printf("export %s=%s\n", k, env[k])
 			if (fi.Mode() & os.ModeCharDevice) == 0 {
-				fmt.Fprintf(os.Stderr, "export %s='%s'\n", k, v)
+				fmt.Fprintf(os.Stderr, "export %s=%s\n", k, env[k])
 			}
 		} else {
-			fmt.Printf("%s=%s\n", k, v)
+			fmt.Printf("%s=%s\n", k, env[k])
 			if (fi.Mode() & os.ModeCharDevice) == 0 {
-				fmt.Fprintf(os.Stderr, "%s=%s\n", k, v)
+				fmt.Fprintf(os.Stderr, "%s=%s\n", k, env[k])
 			}
 		}
 	}
-	return env
 }
 
 func Get() {
@@ -136,6 +145,7 @@ func Get() {
 	kv := consul.KV()
 
 	envMap := map[string]map[string]string{}
+	envKeys := []string{}
 
 	for _, p := range uniquePaths {
 		if verbose {
@@ -159,10 +169,13 @@ func Get() {
 						envMap[folder] = make(map[string]string)
 					}
 					envMap[folder][varName] = val
+					if !contains(envKeys, varName) {
+						envKeys = append([]string{varName}, envKeys...)
+					}
 				}
 			}
 		}
 	}
 
-	processEnv(envMap, paths)
+	processEnv(envMap, envKeys, paths)
 }
