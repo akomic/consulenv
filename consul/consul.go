@@ -124,6 +124,9 @@ func processEnv(envMap map[string]map[string]string, envKeys []string) {
 	fi, _ := os.Stdout.Stat()
 	for _, e := range env {
 		for k, v := range e {
+			if !strings.HasPrefix(v, "\"") && !strings.HasPrefix(v, "'") && !strings.HasSuffix(v, "\"") && !strings.HasSuffix(v, "'") {
+				v = fmt.Sprintf("\"%s\"", v)
+			}
 			if export {
 				fmt.Printf("export %s=%s\n", k, v)
 				if (fi.Mode() & os.ModeCharDevice) == 0 {
