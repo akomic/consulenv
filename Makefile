@@ -17,5 +17,6 @@ clean:
 	$(GOCLEAN)
 	rm -f $(BINARY_NAME)
 	rm -f $(BINARY_NAME).linux.amd64
+	rm -f $(BINARY_NAME).darwin.amd64
 
 all: build build-linux clean
