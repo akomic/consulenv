@@ -102,34 +102,40 @@ func pathsToQuery(paths []string) []string {
 	return uniquePaths
 }
 
-func processEnv(envMap map[string]map[string]string, envKeys []string, paths []string) {
+func processEnv(envMap map[string]map[string]string, envKeys []string) {
+	paths := viper.GetStringSlice("path")
 	export := viper.GetBool("export")
 
-	env := make(map[string]string)
+	var keys []string
+	var env []map[string]string
 
 	for _, path := range paths {
 		path = strings.Trim(path, "/")
 		if _, ok := envMap[path]; ok {
 			for k, v := range envMap[path] {
-				if _, ok := env[k]; !ok {
-					env[k] = v
+				if !contains(keys, k) {
+					keys = append(keys, k)
+					env = append(env, map[string]string{k: v})
 				}
 			}
 		}
 	}
-	fi, _ := os.Stdout.Stat()
 
-	for _, k := range envKeys {
-		if export {
-			fmt.Printf("export %s=%s\n", k, env[k])
-			if (fi.Mode() & os.ModeCharDevice) == 0 {
-				fmt.Fprintf(os.Stderr, "export %s=%s\n", k, env[k])
+	fi, _ := os.Stdout.Stat()
+	for _, e := range env {
+		for k, v := range e {
+			if export {
+				fmt.Printf("export %s=%s\n", k, v)
+				if (fi.Mode() & os.ModeCharDevice) == 0 {
+					fmt.Fprintf(os.Stderr, "export %s=%s\n", k, v)
+				}
+			} else {
+				fmt.Printf("%s=%s\n", k, v)
+				if (fi.Mode() & os.ModeCharDevice) == 0 {
+					fmt.Fprintf(os.Stderr, "%s=%s\n", k, v)
+				}
 			}
-		} else {
-			fmt.Printf("%s=%s\n", k, env[k])
-			if (fi.Mode() & os.ModeCharDevice) == 0 {
-				fmt.Fprintf(os.Stderr, "%s=%s\n", k, env[k])
-			}
+
 		}
 	}
 }
@@ -177,5 +183,5 @@ func Get() {
 		}
 	}
 
-	processEnv(envMap, envKeys, paths)
+	processEnv(envMap, envKeys)
 }
