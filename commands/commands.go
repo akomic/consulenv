@@ -75,15 +75,13 @@ func initConfig() {
 
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
-		if err := viper.ReadInConfig(); err != nil {
-			fmt.Fprintln(os.Stderr, "Failed to read config file: ", err.Error())
-			os.Exit(1)
-		}
+		viper.ReadInConfig()
 	}
 
 	addr := viper.GetString("addr")
+	token := viper.GetString("token")
 
-	if addr == "" {
+	if addr == "" || token == "" {
 		fmt.Println("You need to configure access to Consul server through: config file/env/flags")
 		os.Exit(1)
 	}

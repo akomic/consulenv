@@ -10,9 +10,9 @@ list:
 build:
 	$(GOBUILD) -o $(BINARY_NAME)
 build-linux:
-	GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_NAME).linux.amd64
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -ldflags="-s -w" -o $(BINARY_NAME).linux.amd64
 build-darwin:
-	GOOS=darwin GOARCH=amd64 $(GOBUILD) -o $(BINARY_NAME).darwin.amd64
+	GOOS=darwin GOARCH=amd64 $(GOBUILD) -ldflags="-s -w" -o $(BINARY_NAME).darwin.amd64
 clean:
 	$(GOCLEAN)
 	rm -f $(BINARY_NAME)
