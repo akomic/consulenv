@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"net/http"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -173,13 +174,17 @@ func Get() {
 				folder = strings.Trim(folder, "/")
 				varName := parts[len(parts)-1]
 
-				if val != "" {
-					if _, ok := envMap[folder]; !ok {
-						envMap[folder] = make(map[string]string)
-					}
-					envMap[folder][varName] = val
-					if !contains(envKeys, varName) {
-						envKeys = append([]string{varName}, envKeys...)
+				if varName != "" && val != "" {
+					if ok, _ := regexp.MatchString("^[A-Za-z0-9_]*$", varName); !ok {
+						fmt.Fprintf(os.Stderr, "Invalid var: %s\n", varName)
+					} else {
+						if _, ok := envMap[folder]; !ok {
+							envMap[folder] = make(map[string]string)
+						}
+						envMap[folder][varName] = val
+						if !contains(envKeys, varName) {
+							envKeys = append([]string{varName}, envKeys...)
+						}
 					}
 				}
 			}
