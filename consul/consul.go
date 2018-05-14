@@ -105,6 +105,7 @@ func pathsToQuery(paths []string) []string {
 func processEnv(envMap map[string]map[string]string, envKeys []string) {
 	paths := viper.GetStringSlice("path")
 	export := viper.GetBool("export")
+	verbose := viper.GetBool("verbose")
 
 	var keys []string
 	var env []map[string]string
@@ -127,20 +128,19 @@ func processEnv(envMap map[string]map[string]string, envKeys []string) {
 			if !strings.HasPrefix(v, "\"") && !strings.HasPrefix(v, "'") && !strings.HasSuffix(v, "\"") && !strings.HasSuffix(v, "'") {
 				v = fmt.Sprintf("\"%s\"", v)
 			}
+			var envLine string
 			if export {
-				fmt.Printf("export %s=%s\n", k, v)
-				if (fi.Mode() & os.ModeCharDevice) == 0 {
-					fmt.Fprintf(os.Stderr, "export %s=%s\n", k, v)
-				}
+				envLine = fmt.Sprintf("export %s=%s", k, v)
 			} else {
-				fmt.Printf("%s=%s\n", k, v)
-				if (fi.Mode() & os.ModeCharDevice) == 0 {
-					fmt.Fprintf(os.Stderr, "%s=%s\n", k, v)
-				}
+				envLine = fmt.Sprintf("%s=%s", k, v)
 			}
-
+			fmt.Printf("%s\n", envLine)
+			if verbose && (fi.Mode()&os.ModeCharDevice) == 0 {
+				fmt.Fprintf(os.Stderr, "%s\n", envLine)
+			}
 		}
 	}
+	fmt.Fprintf(os.Stderr, "-- %d env variables loaded --\n", len(env))
 }
 
 func Get() {
