@@ -1,3 +1,4 @@
 consulenv
 consulenv.linux.amd64
 consulenv.darwin.amd64
+profile.sh

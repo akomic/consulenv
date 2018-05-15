@@ -1,5 +1,7 @@
 # ConsulENV
 
+Pulls key/value pairs from Consul KV store and returns it to stdout.
+
 Alternative to envconsul.
 
 - It doesn't keep connection to Consul opened.
