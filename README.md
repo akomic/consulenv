@@ -2,6 +2,10 @@
 
 Alternative to envconsul.
 
+- It doesn't keep connection to Consul opened.
+- Env variable change is not triggering service restart, that's handled by rolling update to secure availability.
+- Env variables are loaded in order specified by prefixes, interpolation supported.
+
 ## Building
 
 ```
@@ -20,5 +24,5 @@ use config.example.yml or env variables.
 ## Running
 
 ```
-eval $(./consulenv -p staging/env/MyApp/ -p environment/env/MyApp/staging1)
+eval "$(./consulenv -p staging/env/ -p staging/MyApp/env/)"
 ```
