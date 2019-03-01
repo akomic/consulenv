@@ -45,6 +45,7 @@ func init() {
 
 	Cmd.PersistentFlags().StringSliceP("path", "p", nil, "Path")
 	Cmd.PersistentFlags().BoolP("export", "e", false, "Export bash format")
+	Cmd.PersistentFlags().BoolP("json", "j", false, "Return in JSON format")
 	Cmd.PersistentFlags().BoolP("verbose", "v", false, "Verbosity")
 
 	viper.BindPFlag("config", Cmd.PersistentFlags().Lookup("config"))
@@ -55,6 +56,7 @@ func init() {
 
 	viper.BindPFlag("path", Cmd.PersistentFlags().Lookup("path"))
 	viper.BindPFlag("export", Cmd.PersistentFlags().Lookup("export"))
+	viper.BindPFlag("json", Cmd.PersistentFlags().Lookup("json"))
 	viper.BindPFlag("verbose", Cmd.PersistentFlags().Lookup("verbose"))
 
 	viper.BindEnv("addr", "CONSUL_HTTP_ADDR")

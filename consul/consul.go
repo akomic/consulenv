@@ -2,6 +2,7 @@ package consul
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	consulapi "github.com/hashicorp/consul/api"
 	"github.com/spf13/viper"
@@ -106,10 +107,11 @@ func pathsToQuery(paths []string) []string {
 func processEnv(envMap map[string]map[string]string, envKeys []string) {
 	paths := viper.GetStringSlice("path")
 	export := viper.GetBool("export")
+	jsonExport := viper.GetBool("json")
 	verbose := viper.GetBool("verbose")
 
 	var keys []string
-	var env []map[string]string
+	env := make(map[string]string)
 
 	for _, path := range paths {
 		path = strings.Trim(path, "/")
@@ -117,19 +119,27 @@ func processEnv(envMap map[string]map[string]string, envKeys []string) {
 			for k, v := range envMap[path] {
 				if !contains(keys, k) {
 					keys = append(keys, k)
-					env = append(env, map[string]string{k: v})
+					env[k] = v
 				}
 			}
 		}
 	}
 
 	fi, _ := os.Stdout.Stat()
-	for _, e := range env {
-		for k, v := range e {
+	if jsonExport {
+		j, err := json.Marshal(env)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error creating JSON: %s\n", err)
+		} else {
+			fmt.Println(string(j))
+		}
+	} else {
+		for _, k := range keys {
+			v := env[k]
+			var envLine string
 			if !strings.HasPrefix(v, "\"") && !strings.HasPrefix(v, "'") && !strings.HasSuffix(v, "\"") && !strings.HasSuffix(v, "'") {
 				v = fmt.Sprintf("\"%s\"", v)
 			}
-			var envLine string
 			if export {
 				envLine = fmt.Sprintf("export %s=%s", k, v)
 			} else {
