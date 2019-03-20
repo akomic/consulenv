@@ -184,7 +184,7 @@ func Get() {
 				folder = strings.Trim(folder, "/")
 				varName := parts[len(parts)-1]
 
-				if varName != "" && val != "" {
+				if varName != "" {
 					if ok, _ := regexp.MatchString("^[A-Za-z0-9_]*$", varName); !ok {
 						fmt.Fprintf(os.Stderr, "Invalid var: %s\n", varName)
 					} else {
