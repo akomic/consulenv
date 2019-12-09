@@ -4,13 +4,14 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	consulapi "github.com/hashicorp/consul/api"
-	"github.com/spf13/viper"
 	"net/http"
 	"os"
 	"regexp"
 	"sort"
 	"strings"
+
+	consulapi "github.com/hashicorp/consul/api"
+	"github.com/spf13/viper"
 )
 
 type ByLength []string
@@ -154,6 +155,32 @@ func processEnv(envMap map[string]map[string]string, envKeys []string) {
 	fmt.Fprintf(os.Stderr, "-- %d env variables loaded --\n", len(env))
 }
 
+func Keys() {
+	paths := viper.GetStringSlice("path")
+	verbose := viper.GetBool("verbose")
+
+	consul := getConsul()
+
+	uniquePaths := pathsToQuery(paths)
+
+	kv := consul.KV()
+
+	for _, p := range uniquePaths {
+		if verbose {
+			fmt.Fprintln(os.Stderr, "Looking at", p)
+		}
+		keyPaths, qm, err := kv.Keys(p+"/", "/", nil)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err, qm)
+			os.Exit(133)
+		} else {
+			for _, keyPath := range keyPaths {
+				fmt.Println(keyPath)
+			}
+		}
+	}
+}
+
 func Get() {
 	paths := viper.GetStringSlice("path")
 	verbose := viper.GetBool("verbose")
@@ -179,6 +206,7 @@ func Get() {
 			for _, kvPair := range kvPairs {
 				val := string(kvPair.Value)
 
+				fmt.Println(kvPair.Key, kvPair.Value)
 				parts := strings.Split(kvPair.Key, "/")
 				folder := strings.Join(parts[:len(parts)-1], "/")
 				folder = strings.Trim(folder, "/")

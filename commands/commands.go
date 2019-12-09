@@ -5,9 +5,10 @@ import (
 	"os"
 
 	"consulenv/consul"
+	"path/filepath"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"path/filepath"
 )
 
 var (
@@ -47,6 +48,7 @@ func init() {
 	Cmd.PersistentFlags().BoolP("export", "e", false, "Export bash format")
 	Cmd.PersistentFlags().BoolP("json", "j", false, "Return in JSON format")
 	Cmd.PersistentFlags().BoolP("verbose", "v", false, "Verbosity")
+	Cmd.PersistentFlags().BoolP("keys", "k", false, "List keys under prefix")
 
 	viper.BindPFlag("config", Cmd.PersistentFlags().Lookup("config"))
 	viper.BindPFlag("addr", Cmd.PersistentFlags().Lookup("addr"))
@@ -58,6 +60,7 @@ func init() {
 	viper.BindPFlag("export", Cmd.PersistentFlags().Lookup("export"))
 	viper.BindPFlag("json", Cmd.PersistentFlags().Lookup("json"))
 	viper.BindPFlag("verbose", Cmd.PersistentFlags().Lookup("verbose"))
+	viper.BindPFlag("keys", Cmd.PersistentFlags().Lookup("keys"))
 
 	viper.BindEnv("addr", "CONSUL_HTTP_ADDR")
 	viper.BindEnv("token", "CONSUL_HTTP_TOKEN")
@@ -91,6 +94,7 @@ func initConfig() {
 
 func fetch(ccmd *cobra.Command, args []string) {
 	paths := viper.GetStringSlice("path")
+	keys := viper.GetBool("keys")
 
 	if len(paths) == 0 {
 		fmt.Fprintln(os.Stderr, "At least one -p required.")
@@ -98,5 +102,9 @@ func fetch(ccmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	consul.Get()
+	if keys {
+		consul.Keys()
+	} else {
+		consul.Get()
+	}
 }
