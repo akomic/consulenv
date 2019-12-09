@@ -206,7 +206,6 @@ func Get() {
 			for _, kvPair := range kvPairs {
 				val := string(kvPair.Value)
 
-				fmt.Println(kvPair.Key, kvPair.Value)
 				parts := strings.Split(kvPair.Key, "/")
 				folder := strings.Join(parts[:len(parts)-1], "/")
 				folder = strings.Trim(folder, "/")
