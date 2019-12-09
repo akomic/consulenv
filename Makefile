@@ -19,4 +19,4 @@ clean:
 	rm -f $(BINARY_NAME).linux.amd64
 	rm -f $(BINARY_NAME).darwin.amd64
 
-all: build build-linux clean
+all: build-linux build-darwin
